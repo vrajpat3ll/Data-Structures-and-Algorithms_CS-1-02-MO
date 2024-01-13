@@ -1,0 +1,285 @@
+//https://www.hackerrank.com/linked-list-assign-4-ug-22
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef struct AnsFound
+{
+    int data;
+    bool flag;
+} Mila;
+
+class Node
+{
+private:
+    int data;
+    Node *next;
+    friend class LinkedList;
+};
+
+class LinkedList
+{
+private:
+    int NEntries;
+    Node *head = new Node;
+
+public:
+    void CreateLL(int n_elements)
+    {
+        NEntries = n_elements;
+        Node *temp = head;
+        while (n_elements)
+        {
+            cin >> temp->data;
+            if (n_elements == 1)
+            {
+                temp->next = NULL;
+                break;
+            }
+            temp->next = new Node;
+            temp = temp->next;
+            n_elements--;
+        }
+    }
+
+    void ReverseLL(void)
+    {
+        Node *current = head;
+        Node *prev = NULL, *next = NULL;
+
+        while (current != NULL)
+        {
+            next = current->next;
+            current->next = prev;
+            prev = current;
+            current = next;
+        }
+        head = prev;
+    }
+
+    void printll(void)
+    {
+        Node *temp = this->head;
+        while (temp != NULL)
+        {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+
+    void InsertAtBeginning(Node **oldhead, int newdata)
+    {
+        Node *temp = new Node;
+        temp->data = newdata;
+        temp->next = *oldhead;
+        *oldhead = temp;
+    }
+
+    void InsertAtANode(int index, int newdata)
+    {
+        if (index == 0)
+        {
+            Node *temp = head;
+            head = NULL;
+            head = new Node;
+            head->data = newdata;
+            head->next = temp;
+            cout << head->data << endl;
+            return;
+        }
+        Node *temp = head;
+
+        for (int i = 0; i < index - 1; i++)
+        {
+            temp = temp->next;
+        }
+        Node *NewNode = new Node;
+        NewNode->data = newdata;
+        NewNode->next = temp->next;
+        temp->next = NewNode;
+    }
+
+    void Append(Node **head, int newdata)
+    {
+
+        Node *NewNode = new Node;
+        Node *last = *head;
+        NewNode->data = newdata;
+        NewNode->next = NULL;
+        if (*head == NULL)
+        {
+            *head = NewNode;
+            return;
+        }
+
+        while (last->next != NULL)
+        {
+            last = last->next;
+        }
+        last->next = NewNode;
+        return;
+    }
+
+    void DeleteANode(int index)
+    {
+        Node *temp = head;
+        if (index == 0) // delete head
+        {
+            head = head->next;
+            delete (temp);
+            return;
+        }
+
+        if (index == NEntries - 1) // delete tail
+        {
+					while ((temp->next)->next != NULL)
+	          {
+                temp = temp->next;
+            }
+            temp->next = NULL;
+            return;
+        }
+
+        for (int i = 0; i < index - 1; i++) // delete in the middle
+        {
+						temp = temp->next;
+        }
+        Node *temp1 = temp->next;
+        temp->next = (temp->next)->next;
+        delete temp1;
+    }
+
+    void Print_N_thNodeFromLast(Node *head, int N)
+    {
+
+        Node *temp = head;
+
+        if (N > NEntries)
+        {
+            cout << -1 << endl;
+            return;
+        }
+
+        temp = head;
+        for (int i = 0; i != NEntries - N; i++, temp = temp->next)
+        {
+        }
+        cout << temp->data << endl;
+    }
+
+    bool operator==(LinkedList &l1)
+    {
+        if (l1.NEntries != this->NEntries)
+            return false;
+        for (Node *temp1 = this->head, *temp2 = l1.head; temp1 != NULL && temp2 != NULL; temp1 = temp1->next, temp2 = temp2->next)
+        {
+            if (temp1->data != temp2->data)
+                return false;
+            // cout<<" temp1  "<<temp1->data<<' '<<"temp2   "<<temp2->data<<endl;
+        }
+        return true;
+    }
+
+    int operator[](int index){
+        if(index<0&&index>NEntries-1){
+            return -5749;
+        }
+        int p=0;
+                Node *temp = this->head;
+        while (temp != NULL)
+        {
+            if (p == index)
+                return temp->data;
+            p++;
+            temp = temp->next;
+        }
+        return -5479;
+    }
+    
+    Mila GetIFromLL(int index)
+    {
+        if (index < 0 && index > NEntries - 1)
+            return Mila{0, 0}; // nahi mila
+        int p = 0;
+        Node *temp = this->head;
+        while (temp != NULL)
+        {
+            if (p == index)
+                return Mila{temp->data, 1};
+            p++;
+            temp = temp->next;
+        }
+        return Mila{0, 0}; // nahi mila
+    }
+
+    bool IsLLPalindrome()
+    {
+        if (head == nullptr)
+            return 1;
+        for (int i = 0; i < NEntries / 2; i++)
+        {
+            if (GetIFromLL(i).data != GetIFromLL(NEntries - i - 1).data)
+            {
+                return false;
+            }
+        }
+        return true;
+	  }
+
+    void DeleteDuplicates()
+    {
+        Node *p = (head)->next;
+        Node *q = head;
+        while (p)
+        {
+            if (p->data == q->data)
+            {
+                q->next = p->next;
+                Node *s = p;
+                p = p->next;
+                free(s);
+            }
+            else
+            {
+                p = p->next;
+                q = q->next;
+            }
+        }
+    }
+
+    void Rotate(int k){
+
+        Node* slow = NULL;
+        Node* temp = head;
+
+        while(k > 0){
+            slow = temp;
+            temp= temp->next;
+            k--;
+        }
+
+        if(temp == NULL) return;
+
+        Node* nn = temp;
+        slow->next = NULL;
+
+        while(temp->next != NULL) temp = temp->next;
+
+        temp->next = head;
+        head = nn;
+    }
+};
+
+int main()
+{
+    int n;
+    cin >> n;
+    LinkedList list;
+    list.CreateLL(n);
+    int k;
+    cin >> k;
+    list.Rotate(k);
+    list.printll();
+    //cout<<list[n-2];
+    return 0;
+}
